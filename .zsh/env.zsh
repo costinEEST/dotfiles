@@ -10,3 +10,6 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 
 # labctl
 export PATH="$PATH:$HOME/.iximiuz/labctl/bin"
+
+# Claude
+export PATH="$HOME/.local/bin:$PATH"
