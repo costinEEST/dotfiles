@@ -19,31 +19,38 @@ Once at the start of a session, from the project root (the folder that contains 
 
 ## Command
 
+`pipefail` makes the command fail when the download fails. Without it, `python3 -` would run an empty script and report success.
+
 Codex:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/costinEEST/dotfiles/main/scripts/convert-skill.py | python3 - --sync --target codex
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/costinEEST/dotfiles/main/scripts/convert-skill.py | python3 - --sync --target codex'
 ```
 
 Claude Code:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/costinEEST/dotfiles/main/scripts/convert-skill.py | python3 - --sync --target claude
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/costinEEST/dotfiles/main/scripts/convert-skill.py | python3 - --sync --target claude'
 ```
 
 Kiro:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/costinEEST/dotfiles/main/scripts/convert-skill.py | python3 - --sync --target kiro
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/costinEEST/dotfiles/main/scripts/convert-skill.py | python3 - --sync --target kiro'
 ```
 
-On Windows use `python` (or `py -3`) instead of `python3`, and `curl.exe` in PowerShell.
+On Windows (PowerShell), download the script first and run it only if the download worked. Use your own agent as the target:
 
-If the script is saved on this machine, run `python3 <path>/convert-skill.py --sync --target <your agent>` instead of using curl.
+```powershell
+$f = "$env:TEMP\convert-skill.py"; curl.exe -fsSL -o $f https://raw.githubusercontent.com/costinEEST/dotfiles/main/scripts/convert-skill.py; if ($?) { python $f --sync --target codex }
+```
+
+If the script is saved on this machine, run `python3 <path>/convert-skill.py --sync --target <your agent>` instead of downloading it.
 
 ## What to do with the result
 
-- The script prints one line per file. `link` and `create` mean a skill was added, `overwrite` means a generated copy was refreshed because the original changed, and `unchanged` means it was already there.
+- The command failed if its exit code is not 0, or if it printed a line starting with `curl:` or `error:`.
+- Otherwise it prints one line per file. `link` and `create` mean a skill was added, `overwrite` means a generated copy was refreshed because the original changed, and `unchanged` means it was already there.
 - `differs` means a skill with that name already exists and its `SKILL.md` is not the same as the other agent's copy. Tell the user which skill and stop there. Do not overwrite it.
 - Tell the user in one or two sentences which skills were added. If none were, say nothing.
 - A skill added during the session may not be available until the agent restarts. If you need it now, read its `SKILL.md` directly.
@@ -52,4 +59,4 @@ If the script is saved on this machine, run `python3 <path>/convert-skill.py --s
 
 - Never add `--force`, `--global` or `--dest`, and do not edit the converted files by hand. Change the original skill and run the command again.
 - Do not commit the new files. They are listed in `.git/info/exclude`, so `git status` does not show them. Only the original skill folder belongs in Git.
-- If the command fails (no network, no Python, no curl), say so in one sentence and carry on with the task.
+- If the command fails (no network, no Python, no curl, no bash), tell the user in one sentence, including the error line, and carry on with the task.
