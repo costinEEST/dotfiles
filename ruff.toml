@@ -1,0 +1,9 @@
+# Ruff settings for the Python scripts in this repository.
+# Same rule set as python-cookbook-by-steven-f-lott, but scripts/convert-skill.py
+# must run on Python 3.9 (the python3 of the macOS Command Line Tools), so Ruff
+# must not suggest syntax that only newer versions understand at runtime.
+target-version = "py39"
+line-length = 120
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "SIM", "RUF"]
