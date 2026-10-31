@@ -42,7 +42,8 @@ Make a whole project work for one agent
     python3 convert-skill.py --sync --target codex      # run in the project root
 looks for .agents/skills, .claude/skills and .kiro/skills, converts the skills that
 the target does not have yet and leaves existing ones alone. This is the command
-the "sync skills" rule in the dotfiles readme tells an agent to run.
+the "sync skills" rule (scripts/sync-skills-rule.md) tells an agent to run.
+Full documentation: scripts/convert-skill.md in the dotfiles repository.
 
 Run it straight from GitHub:
 
