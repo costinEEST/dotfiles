@@ -15,7 +15,10 @@ A project may only have skills for another agent. When that happens, convert the
 Once at the start of a session, from the project root (the folder that contains `.git`; if there is none, the folder you were opened in).
 
 1. Look for the skills folders of the two other agents. If none exists, do nothing and do not mention this rule.
-2. If at least one exists, run the command for your own agent from the project root.
+2. List the skill folder names in those folders and in your own skills folder. Do nothing, and do not mention this rule, when both of these are true:
+   - every skill name in the other agents' folders also exists in your own folder;
+   - none of your own skill folders is listed between `# BEGIN convert-skill.py generated` and `# END convert-skill.py generated` in `.git/info/exclude`. A listed folder is a copy the script generated, and running the command refreshes it when the original has changed. A listed symlink does not count, because it always shows the current original.
+3. Otherwise run the command for your own agent from the project root.
 
 ## Command
 

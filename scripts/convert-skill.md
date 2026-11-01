@@ -6,14 +6,25 @@ The source is never modified. The script adds what the target agent needs next t
 
 The commands below are run from the root of this repository unless they download the script.
 
-- [Goal: Codex and Kiro in the same project](#goal-codex-and-kiro-in-the-same-project)
-- [When files are shared and when they are copied](#when-files-are-shared-and-when-they-are-copied)
-- [What to commit to Git](#what-to-commit-to-git)
-- [Make a whole project work for one agent (`--sync`)](#make-a-whole-project-work-for-one-agent---sync)
-- [Run it straight from GitHub](#run-it-straight-from-github)
-- [Source](#source) · [What is produced](#what-is-produced) · [Where the output goes](#where-the-output-goes)
-- [Options](#options) · [Output status](#output-status) · [Errors and exit codes](#errors-and-exit-codes) · [Limits](#limits)
-- [Make agents convert skills on their own](#make-agents-convert-skills-on-their-own)
+- [`convert-skill.py`](#convert-skillpy)
+  - [Goal: Codex and Kiro in the same project](#goal-codex-and-kiro-in-the-same-project)
+  - [When files are shared and when they are copied](#when-files-are-shared-and-when-they-are-copied)
+  - [What to commit to Git](#what-to-commit-to-git)
+  - [Make a whole project work for one agent (`--sync`)](#make-a-whole-project-work-for-one-agent---sync)
+  - [Run it straight from GitHub](#run-it-straight-from-github)
+  - [Source](#source)
+  - [What is produced](#what-is-produced)
+  - [Where the output goes](#where-the-output-goes)
+  - [Options](#options)
+  - [Output status](#output-status)
+  - [Errors and exit codes](#errors-and-exit-codes)
+  - [Limits](#limits)
+  - [Make agents convert skills on their own](#make-agents-convert-skills-on-their-own)
+    - [Install the rule with the script](#install-the-rule-with-the-script)
+    - [Check that the rule is active](#check-that-the-rule-is-active)
+    - [What the rule makes the agent do](#what-the-rule-makes-the-agent-do)
+    - [Where you see a failure](#where-you-see-a-failure)
+    - [Security](#security)
 
 ## Goal: Codex and Kiro in the same project
 
@@ -231,9 +242,10 @@ To see the rule act, open a project that has skills for another agent only and s
 ### What the rule makes the agent do
 
 1. At the start of a session, look in the project for the skills folders of the other two agents (`.agents/skills`, `.claude/skills`, `.kiro/skills`). If there are none, do nothing.
-2. Otherwise run `bash -o pipefail -c 'curl -fsSL .../convert-skill.py | python3 - --sync --target <itself>'` from the project root.
-3. Report which skills were added. If a skill `differs`, tell the user and do not overwrite it.
-4. Never use `--force`, `--global` or `--dest`, and never edit converted files by hand. Do not commit them: they are listed in `.git/info/exclude`, so only the original skill folder is committed.
+2. Skip the command when the agent already has every skill of the other agents and none of its own skill folders is a generated copy (listed in the managed block of `.git/info/exclude`; a listed symlink does not count). This needs no download and no approval. Example: Codex in a project whose original skills are in `.agents/skills` and whose `.claude`/`.kiro` copies were generated from them. Claude Code and Kiro still run the command in that project, because their copies may need a refresh.
+3. Otherwise run `bash -o pipefail -c 'curl -fsSL .../convert-skill.py | python3 - --sync --target <itself>'` from the project root.
+4. Report which skills were added. If a skill `differs`, tell the user and do not overwrite it.
+5. Never use `--force`, `--global` or `--dest`, and never edit converted files by hand. Do not commit them: they are listed in `.git/info/exclude`, so only the original skill folder is committed.
 
 ### Where you see a failure
 
